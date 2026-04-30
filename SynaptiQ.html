@@ -1477,7 +1477,7 @@ async function runAnalysis() {
   try {
     const formData = new FormData();
     formData.append('image', fileInput.files[0]);
-    const res = await fetch('http://localhost:8000/predict/image', { method: 'POST', body: formData });
+    const res = await fetch('https://gauravupadhyay2004-synaptiq.hf.space/predict/image', { method: 'POST', body: formData });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     const safePct = Math.round(data.safe_prob * 100);
@@ -1564,7 +1564,7 @@ async function getCarRecommendations() {
   container.innerHTML = `<div style="color:var(--muted); font-size:0.75rem; text-align:center; padding:20px;">⏳ Finding matches...</div>`;
 
   try {
-    const res = await fetch('http://localhost:8000/recommend/car', {
+    const res = await fetch('https://gauravupadhyay2004-synaptiq.hf.space/recommend/car', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1605,7 +1605,7 @@ async function runPrediction() {
   container.innerHTML = `<div style="color:var(--muted); font-size:0.75rem; text-align:center; padding:20px;">⏳ Running model...</div>`;
 
   try {
-    const res = await fetch('http://localhost:8000/predict/analytics', {
+    const res = await fetch('https://gauravupadhyay2004-synaptiq.hf.space/predict/analytics', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

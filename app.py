@@ -5,7 +5,7 @@ Models:
   - AutoMatch  : KNN on Automobile_dataset.csv
   - PredictIQ  : Random Forest on logistics_data.csv
 """
-
+  
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -28,8 +28,12 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 # ── MODEL 1: ImageGuard ──
 print("Loading ImageGuard model...")
-image_model = tf.keras.models.load_model("adult_content_detector_new.keras", compile=False)
-print("✅ ImageGuard model loaded!")
+try:
+    image_model = tf.keras.models.load_model("adult_content_detector_new.keras", compile=False)
+    print("✅ ImageGuard model loaded!")
+except Exception as e:
+    print(f"⚠️ ImageGuard model failed to load: {e}")
+    image_model = None
 
 # ── MODEL 2: PredictIQ ──
 print("Loading PredictIQ model...")

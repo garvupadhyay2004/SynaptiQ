@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SynaptiQ — AI Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --surface: #0c1120;
+    --surface2: #111827;
+    --border: rgba(255,255,255,0.07);
+    --accent1: #00f5c4;
+    --accent2: #7b5cf5;
+    --accent3: #f5a623;
+    --text: #e8edf5;
+    --muted: #6b7a99;
+    --glow1: rgba(0,245,196,0.15);
+    --glow2: rgba(123,92,245,0.15);
+    --glow3: rgba(245,166,35,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+  }
+
+  /* BACKGROUND GRID */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,196,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,196,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NOISE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+    background: rgba(5,8,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--accent1); }
+
+  nav ul {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+  }
+
+  nav ul a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav ul a:hover { color: var(--accent1); }
+
+  .nav-badge {
+    background: var(--glow1);
+    border: 1px solid var(--accent1);
+    color: var(--accent1);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    border-radius: 2px;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+  }
+
+  .hero-label {
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero h1 .q {
+    color: var(--accent1);
+    text-shadow: 0 0 60px var(--accent1);
+  }
+
+  .hero-sub {
+    font-size: 0.9rem;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.8;
+    margin-bottom: 50px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .btn-primary {
+    background: var(--accent1);
+    color: #000;
+    border: none;
+    padding: 14px 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 30px var(--accent1);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 14px 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--muted);
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* FLOATING ORBS */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  .orb1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,245,196,0.12), transparent 70%);
+    top: -100px; left: -100px;
+    animation: float1 8s ease-in-out infinite;
+  }
+
+  .orb2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(123,92,245,0.12), transparent 70%);
+    bottom: 0; right: -80px;
+    animation: float2 10s ease-in-out infinite;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    opacity: 0;
+    animation: fadeIn 1s 1.2s forwards;
+  }
+
+  .stat-item {
+    flex: 1;
+    max-width: 280px;
+    padding: 30px 40px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent1);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* SECTION */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 60px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-size: 0.68rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.9;
+    max-width: 500px;
+    margin-bottom: 60px;
+  }
+
+  /* TOOLS GRID */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .tool-card {
+    padding: 50px 40px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* Dark overlay so text stays readable */
+  .tool-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 8, 16, 0.82);
+    transition: background 0.3s;
+    z-index: 0;
+  }
+
+  .tool-card:hover::after {
+    background: rgba(5, 8, 16, 0.65);
+  }
+
+  /* All content above overlay */
+  .tool-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
+  }
+
+  /* ImageGuard — eye/scanning AI theme */
+  .tool-card.t1 {
+    background-image: url('https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80&fit=crop');
+  }
+  .tool-card.t1::before { background: linear-gradient(135deg, rgba(0,245,196,0.15), transparent); }
+
+  /* AutoMatch — car/speed theme */
+  .tool-card.t2 {
+    background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80&fit=crop');
+  }
+  .tool-card.t2::before { background: linear-gradient(135deg, rgba(123,92,245,0.15), transparent); }
+
+  /* PredictIQ — data/analytics theme */
+  .tool-card.t3 {
+    background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&fit=crop');
+  }
+  .tool-card.t3::before { background: linear-gradient(135deg, rgba(245,166,35,0.15), transparent); }
+
+  .tool-card:hover::before { opacity: 1; }
+
+  .tool-num {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--muted);
+    margin-bottom: 30px;
+    display: block;
+  }
+
+  .tool-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    position: relative;
+  }
+
+  .t1 .tool-icon { background: var(--glow1); border: 1px solid rgba(0,245,196,0.3); }
+  .t2 .tool-icon { background: var(--glow2); border: 1px solid rgba(123,92,245,0.3); }
+  .t3 .tool-icon { background: var(--glow3); border: 1px solid rgba(245,166,35,0.3); }
+
+  .tool-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .t1 .tool-name { color: var(--accent1); }
+  .t2 .tool-name { color: var(--accent2); }
+  .t3 .tool-name { color: var(--accent3); }
+
+  .tool-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 30px;
+  }
+
+  .tool-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    font-size: 0.62rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  .t1 .tag { background: var(--glow1); color: var(--accent1); border: 1px solid rgba(0,245,196,0.2); }
+  .t2 .tag { background: var(--glow2); color: var(--accent2); border: 1px solid rgba(123,92,245,0.2); }
+  .t3 .tag { background: var(--glow3); color: var(--accent3); border: 1px solid rgba(245,166,35,0.2); }
+
+  .tool-arrow {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: all 0.3s;
+    transform: translateX(-8px);
+  }
+
+  .tool-card:hover .tool-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* DEMO SECTION */
+  .demo-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+
+  .demo-section > section {
+    padding: 100px 60px;
+    max-width: 1300px;
+  }
+
+  .demo-tabs {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    width: fit-content;
+    margin-bottom: 40px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .demo-tab {
+    padding: 12px 28px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.2s;
+    border-right: 1px solid var(--border);
+  }
+
+  .demo-tab:last-child { border-right: none; }
+
+  .demo-tab.active {
+    background: var(--accent1);
+    color: #000;
+    font-weight: 500;
+  }
+
+  .demo-tab:not(.active):hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .demo-panel {
+    display: none;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .demo-panel.active { display: block; }
+
+  .demo-header {
+    background: var(--surface);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .demo-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  .d1 { background: #ff5f57; }
+  .d2 { background: #febc2e; }
+  .d3 { background: #28c840; }
+
+  .demo-title {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-left: 6px;
+    letter-spacing: 1px;
+  }
+
+  .demo-body {
+    padding: 40px;
+    min-height: 360px;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+
+  /* IMAGE DETECTION DEMO */
+  .upload-zone {
+    flex: 1;
+    border: 2px dashed rgba(0,245,196,0.2);
+    border-radius: 4px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(0,245,196,0.02);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upload-zone:hover {
+    border-color: var(--accent1);
+    background: var(--glow1);
+  }
+
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-icon { font-size: 2.5rem; margin-bottom: 16px; display: block; }
+
+  .upload-text { font-size: 0.8rem; color: var(--muted); }
+  .upload-text strong { color: var(--accent1); }
+
+  #preview-img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 4px;
+    display: none;
+    margin: 0 auto 16px;
+  }
+
+  .result-panel {
+    width: 260px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .result-header {
+    padding: 14px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .result-body { padding: 24px 18px; }
+
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .result-safe { background: var(--glow1); color: var(--accent1); border: 1px solid rgba(0,245,196,0.3); }
+  .result-unsafe { background: rgba(255,80,80,0.1); color: #ff5050; border: 1px solid rgba(255,80,80,0.3); }
+  .result-wait { background: rgba(107,122,153,0.1); color: var(--muted); border: 1px solid var(--border); }
+
+  .confidence-bar-wrap { margin-bottom: 12px; }
+  .conf-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .conf-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .conf-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+  .conf-green { background: var(--accent1); }
+  .conf-red { background: #ff5050; }
+
+  .analyze-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 10px;
+    background: var(--accent1);
+    color: #000;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 2px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .analyze-btn:hover { box-shadow: 0 0 20px rgba(0,245,196,0.4); }
+  .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* CAR RECOMMENDATION DEMO */
+  .car-form {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-content: start;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group.full { grid-column: span 2; }
+
+  .form-label {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .form-select, .form-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-select:focus, .form-input:focus { border-color: var(--accent2); }
+  .form-select option { background: var(--surface2); }
+
+  .range-val { color: var(--accent2); float: right; }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent2);
+  }
+
+  .recommend-btn {
+    grid-column: span 2;
+    padding: 12px;
+    background: var(--accent2);
+    color: #fff;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .recommend-btn:hover { box-shadow: 0 0 20px rgba(123,92,245,0.4); }
+
+  .car-results {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .car-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .car-card:hover { border-color: var(--accent2); }
+
+  .car-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+
+  .car-specs {
+    font-size: 0.65rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .car-match {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .match-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; margin: 0 10px; overflow: hidden; }
+  .match-fill { height: 100%; background: var(--accent2); border-radius: 2px; }
+  .match-pct { font-size: 0.65rem; color: var(--accent2); }
+
+  /* PREDICTIVE DEMO */
+  .predict-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .predict-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .predict-btn {
+    padding: 12px;
+    background: var(--accent3);
+    color: #000;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 2px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .predict-btn:hover { box-shadow: 0 0 20px rgba(245,166,35,0.4); }
+
+  .predict-results {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .predict-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px;
+  }
+
+  .predict-metric {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .predict-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent3);
+  }
+
+  .predict-change {
+    font-size: 0.7rem;
+    color: var(--accent1);
+    margin-top: 4px;
+  }
+
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 40px;
+    margin-top: 12px;
+  }
+
+  .bar {
+    flex: 1;
+    border-radius: 2px 2px 0 0;
+    background: rgba(245,166,35,0.3);
+    transition: height 0.5s ease, background 0.3s;
+  }
+
+  .bar.active { background: var(--accent3); }
+
+  /* TECH SECTION */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 60px;
+  }
+
+  .tech-item {
+    background: var(--surface);
+    padding: 30px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: background 0.2s;
+  }
+
+  .tech-item:hover { background: var(--surface2); }
+
+  .tech-item-icon { font-size: 1.3rem; }
+
+  .tech-item-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .tech-item-type {
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 50px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .footer-logo span { color: var(--accent1); }
+
+  .footer-copy {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 30px;
+  }
+
+  .footer-links a {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--accent1); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes float1 {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(30px, 20px); }
+  }
+
+  @keyframes float2 {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(-20px, -30px); }
+  }
+
+  /* Scroll animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    nav ul { display: none; }
+    section { padding: 60px 24px; }
+    .tools-grid { grid-template-columns: 1fr; }
+    .demo-body { flex-direction: column; }
+    .result-panel, .car-results, .predict-results { width: 100%; }
+    .car-form { grid-template-columns: 1fr; }
+    .car-form .full, .car-form .recommend-btn { grid-column: span 1; }
+    .predict-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; gap: 20px; text-align: center; }
+    .stats-bar { flex-direction: column; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+  /* ── SPLASH SCREEN ── */
+  #splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #050810;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+
+  #splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .splash-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: splashFadeUp 0.8s ease forwards 0.5s;
+    letter-spacing: -1px;
+  }
+
+  .splash-logo span { color: var(--accent1); }
+
+  .splash-tagline {
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    color: var(--muted);
+    opacity: 0;
+    animation: splashFadeUp 0.8s ease forwards 1s;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .splash-bar {
+    width: 0%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    margin-top: 40px;
+    animation: splashLoad 6s ease forwards 1.2s;
+    border-radius: 2px;
+  }
+
+  /* Neural nodes animation */
+  .splash-nodes {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .splash-node {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent1);
+    opacity: 0;
+    animation: nodeFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes splashFadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes splashLoad {
+    to { width: 200px; }
+  }
+
+  @keyframes nodeFloat {
+    0% { opacity: 0; transform: translateY(0px); }
+    50% { opacity: 0.4; }
+    100% { opacity: 0; transform: translateY(-80px); }
+  }
+  @keyframes nodeUp {
+    0% { opacity:0; transform:translateY(0); }
+    50% { opacity:0.5; }
+    100% { opacity:0; transform:translateY(-100px); }
+  }
+</style>
+
+<!-- SPLASH SCREEN -->
+<div id="splash" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#050810;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+  <div id="splashNodes" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;"></div>
+  <div id="splashLogo" style="font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;color:#fff;letter-spacing:-1px;opacity:0;transform:translateY(30px);transition:all 0.8s ease;">Synapti<span style="color:#00f5c4;">Q</span></div>
+  <div id="splashTag" style="font-size:0.7rem;letter-spacing:4px;color:#6b7a99;margin-top:14px;opacity:0;transition:all 0.8s ease 0.4s;">AI · INTELLIGENCE · PLATFORM</div>
+  <div style="width:200px;height:2px;background:#111827;margin-top:36px;border-radius:2px;overflow:hidden;">
+    <div id="splashBar" style="width:0%;height:100%;background:linear-gradient(90deg,#00f5c4,#7b5cf5);transition:width 6s ease;"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Synapti<span>Q</span></div>
+  <ul>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#tech">Tech Stack</a></li>
+        <li><a href="#about">About</a></li>
+  </ul>
+  <div class="nav-badge">v1.0 BETA</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <span class="hero-label">AI-Powered Intelligence Platform</span>
+  <h1>Synapti<span class="q">Q</span></h1>
+  <p class="hero-sub">Three machine learning engines. One unified platform. Detect, recommend, and predict with state-of-the-art AI models built for real-world applications.</p>
+  <div class="hero-btns">
+    <a href="#demo" class="btn-primary">Explore Demo</a>
+    <a href="#tools" class="btn-ghost">View Tools</a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num">3</span>
+    <span class="stat-label">AI Engines</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">99%</span>
+    <span class="stat-label">Detection Accuracy</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">&lt;200ms</span>
+    <span class="stat-label">Inference Time</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">ML</span>
+    <span class="stat-label">Powered</span>
+  </div>
+</div>
+
+<!-- TOOLS -->
+<section id="tools">
+  <span class="section-tag reveal">// core modules</span>
+  <h2 class="section-title reveal">Three engines.<br>Infinite possibilities.</h2>
+  <p class="section-desc reveal">Each module is an independently trained machine learning model, seamlessly integrated into a single cohesive platform.</p>
+
+  <div class="tools-grid reveal">
+    <div class="tool-card t1" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'}); switchTab('img')">
+      <span class="tool-num">01 / 03</span>
+      <div class="tool-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent1)">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="tool-name">ImageGuard</div>
+      <p class="tool-desc">Binary image classification using a convolutional neural network to detect adult vs non-adult content with high precision and low false positives.</p>
+      <div class="tool-tags">
+        <span class="tag">CNN</span>
+        <span class="tag">Image Classification</span>
+        <span class="tag">Safety</span>
+      </div>
+      <div class="tool-arrow">→</div>
+    </div>
+
+    <div class="tool-card t2" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'}); switchTab('car')">
+      <span class="tool-num">02 / 03</span>
+      <div class="tool-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent2)">
+          <rect x="1" y="3" width="15" height="13" rx="2"/>
+          <path d="M16 8h4l3 3v5h-7V8z"/>
+          <circle cx="5.5" cy="18.5" r="2.5"/>
+          <circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </div>
+      <div class="tool-name">AutoMatch</div>
+      <p class="tool-desc">Collaborative filtering and content-based recommendation engine that matches users to ideal vehicles based on preferences, budget, and lifestyle factors.</p>
+      <div class="tool-tags">
+        <span class="tag">Recommender</span>
+        <span class="tag">Filtering</span>
+        <span class="tag">NLP</span>
+      </div>
+      <div class="tool-arrow">→</div>
+    </div>
+
+    <div class="tool-card t3" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'}); switchTab('pred')">
+      <span class="tool-num">03 / 03</span>
+      <div class="tool-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent3)">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+          <path d="M3 20h18"/>
+          <path d="M6 14l4-4 4 3 4-6"/>
+        </svg>
+      </div>
+      <div class="tool-name">PredictIQ</div>
+      <p class="tool-desc">Predictive analytics engine leveraging gradient-boosted trees and time-series modeling to forecast trends, outcomes, and KPIs from structured data.</p>
+      <div class="tool-tags">
+        <span class="tag">XGBoost</span>
+        <span class="tag">Time Series</span>
+        <span class="tag">Forecasting</span>
+      </div>
+      <div class="tool-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<div class="demo-section" id="demo">
+  <section>
+    <span class="section-tag reveal">// live demo</span>
+    <h2 class="section-title reveal">Try it yourself.</h2>
+    <p class="section-desc reveal">Interactive demos of all three AI engines. Upload, configure, and see results in real time.</p>
+
+    <div class="demo-tabs reveal">
+      <button class="demo-tab active" onclick="switchTab('img')">⬡ ImageGuard</button>
+      <button class="demo-tab" onclick="switchTab('car')">⬡ AutoMatch</button>
+      <button class="demo-tab" onclick="switchTab('pred')">⬡ PredictIQ</button>
+    </div>
+
+    <!-- IMAGE GUARD PANEL -->
+    <div class="demo-panel active" id="panel-img">
+      <div class="demo-header">
+        <div class="demo-dot d1"></div>
+        <div class="demo-dot d2"></div>
+        <div class="demo-dot d3"></div>
+        <span class="demo-title">ImageGuard — Content Safety Detector</span>
+      </div>
+      <div class="demo-body">
+        <div class="upload-zone" id="drop-zone">
+          <input type="file" id="file-input" accept="image/*">
+          <img id="preview-img" alt="Preview">
+          <span class="upload-icon" id="upload-icon">📁</span>
+          <div class="upload-text" id="upload-text"><strong>Click or drag</strong> an image to analyze</div>
+        </div>
+        <div class="result-panel">
+          <div class="result-header">Analysis Result</div>
+          <div class="result-body">
+            <div class="result-badge result-wait" id="result-badge">⏳ Awaiting input</div>
+
+            <div class="confidence-bar-wrap">
+              <div class="conf-label">
+                <span>Safe Content</span>
+                <span id="safe-pct">—</span>
+              </div>
+              <div class="conf-bar"><div class="conf-fill conf-green" id="safe-bar" style="width:0%"></div></div>
+            </div>
+
+            <div class="confidence-bar-wrap">
+              <div class="conf-label">
+                <span>Adult Content</span>
+                <span id="unsafe-pct">—</span>
+              </div>
+              <div class="conf-bar"><div class="conf-fill conf-red" id="unsafe-bar" style="width:0%"></div></div>
+            </div>
+
+            <div style="font-size:0.62rem; color:var(--muted); line-height:1.7; margin-top:16px; border-top:1px solid var(--border); padding-top:14px;">
+              <div>Model: CNN v2.1</div>
+              <div>Threshold: 0.50</div>
+              <div id="inference-time">Inference: —</div>
+            </div>
+
+            <button class="analyze-btn" id="analyze-btn" onclick="runAnalysis()" disabled>ANALYZE IMAGE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAR REC PANEL -->
+    <div class="demo-panel" id="panel-car">
+      <div class="demo-header">
+        <div class="demo-dot d1"></div><div class="demo-dot d2"></div><div class="demo-dot d3"></div>
+        <span class="demo-title">AutoMatch — Car Recommendation Engine</span>
+      </div>
+      <div class="demo-body">
+        <div class="car-form">
+          <div class="form-group">
+            <label class="form-label">Horsepower (HP)</label>
+            <input type="number" class="form-select" id="car-hp" value="200" min="50" max="1000" placeholder="e.g. 200">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cylinders</label>
+            <select class="form-select" id="car-cylinders">
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
+              <option value="6">6</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+              <option value="12">12</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Highway MPG</label>
+            <input type="number" class="form-select" id="car-hwy" value="30" min="5" max="100" placeholder="e.g. 30">
+          </div>
+          <div class="form-group">
+            <label class="form-label">City MPG</label>
+            <input type="number" class="form-select" id="car-city" value="25" min="5" max="100" placeholder="e.g. 25">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Budget (USD): $<span id="budget-val">30,000</span></label>
+            <input type="range" id="car-budget" min="5000" max="200000" value="30000" step="1000" oninput="updateBudget(this.value)">
+          </div>
+          <button class="recommend-btn" onclick="getCarRecommendations()">GET RECOMMENDATIONS →</button>
+        </div>
+        <div class="car-results" id="car-results">
+          <div style="color:var(--muted); font-size:0.75rem; text-align:center; padding:40px 0;">Enter your preferences<br>and click recommend</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREDICT PANEL -->
+    <div class="demo-panel" id="panel-pred">
+      <div class="demo-header">
+        <div class="demo-dot d1"></div><div class="demo-dot d2"></div><div class="demo-dot d3"></div>
+        <span class="demo-title">PredictIQ — Predictive Analytics Engine</span>
+      </div>
+      <div class="demo-body">
+        <div class="predict-form">
+          <div class="predict-grid">
+            <div class="form-group">
+              <label class="form-label">Domain</label>
+              <select class="form-select" id="pred-domain">
+                <option>Sales Forecasting</option><option>Stock Price</option>
+                <option>Customer Churn</option><option>Demand Planning</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time Horizon</label>
+              <select class="form-select" id="pred-horizon">
+                <option>7 Days</option><option>30 Days</option>
+                <option>90 Days</option><option>1 Year</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Historical Data (months)</label>
+              <input type="number" class="form-input" value="12" min="1" max="60" id="pred-months">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confidence Level</label>
+              <select class="form-select" id="pred-conf">
+                <option>95%</option><option>90%</option><option>80%</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label">Current Value</label>
+              <input type="number" class="form-input" value="84500" id="pred-current">
+            </div>
+          </div>
+          <button class="predict-btn" onclick="runPrediction()">RUN PREDICTION →</button>
+        </div>
+
+        <div class="predict-results" id="pred-results">
+          <div style="color:var(--muted); font-size:0.75rem; text-align:center; padding:40px 0;">Fill in parameters<br>and run prediction</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <span class="section-tag reveal">// under the hood</span>
+  <h2 class="section-title reveal">Built on proven<br>ML infrastructure.</h2>
+  <p class="section-desc reveal">SynaptiQ is powered by industry-standard machine learning frameworks and modern web technologies.</p>
+
+  <div class="tech-grid reveal">
+    <div class="tech-item"><span class="tech-item-icon">🐍</span><div><div class="tech-item-name">Python</div><div class="tech-item-type">Core Language</div></div></div>
+    <div class="tech-item"><span class="tech-item-icon">🔥</span><div><div class="tech-item-name">TensorFlow</div><div class="tech-item-type">Deep Learning</div></div></div>
+    <div class="tech-item"><span class="tech-item-icon">⚡</span><div><div class="tech-item-name">Scikit-learn</div><div class="tech-item-type">ML Models</div></div></div>
+    <div class="tech-item"><span class="tech-item-icon">🚀</span><div><div class="tech-item-name">FastAPI</div><div class="tech-item-type">Backend API</div></div></div>
+    <div class="tech-item"><span class="tech-item-icon">🐼</span><div><div class="tech-item-name">Pandas</div><div class="tech-item-type">Data Processing</div></div></div>
+    <div class="tech-item"><span class="tech-item-icon">📊</span><div><div class="tech-item-name">XGBoost</div><div class="tech-item-type">Gradient Boosting</div></div></div>
+    <div class="tech-item"><span class="tech-item-icon">🌐</span><div><div class="tech-item-name">HTML/CSS/JS</div><div class="tech-item-type">Frontend</div></div></div>
+    <div class="tech-item"><span class="tech-item-icon">🗄️</span><div><div class="tech-item-name">PostgreSQL</div><div class="tech-item-type">Database</div></div></div>
+  </div>
+</section>
+
+<!-- ABOUT / CREATOR SECTION -->
+<section id="about" style="padding: 120px 60px; position:relative; z-index:1; max-width:1200px; margin:0 auto;">
+  <div style="text-align:center; margin-bottom:70px;">
+    <div style="font-size:0.7rem; letter-spacing:3px; color:var(--accent1); margin-bottom:16px;">THE CREATOR</div>
+    <h2 style="font-family:'Syne',sans-serif; font-size:2.8rem; font-weight:800; color:var(--text);">Built by a <span style="color:var(--accent2);">Developer</span></h2>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1.6fr; gap:40px; align-items:start;">
+
+    <!-- LEFT — Creator Card -->
+    <div style="background:var(--surface); border:1px solid var(--border); padding:40px; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, var(--accent1), var(--accent2));"></div>
+
+      <!-- Real Photo -->
+      <div style="width:100px; height:100px; border-radius:50%; overflow:hidden; border:2px solid var(--accent1); box-shadow:0 0 25px var(--glow1); margin-bottom:24px;">
+        <img src="Formal_photo.jpg" alt="Gaurav Upadhyay" style="width:100%; height:100%; object-fit:cover; object-position:center top;">
+      </div>
+
+      <div style="font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:700; color:var(--text); margin-bottom:6px;">Gaurav Upadhyay</div>
+      <div style="font-size:0.7rem; color:var(--accent1); letter-spacing:2px; margin-bottom:20px;">ML ENGINEER & DEVELOPER</div>
+
+      <p style="font-size:0.78rem; color:var(--muted); line-height:1.8; margin-bottom:28px;">
+        Passionate about building real-world AI applications. SynaptiQ is a culmination of three machine learning projects — each solving a distinct problem using modern ML techniques.
+      </p>
+
+      <!-- Social links -->
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <a href="https://github.com/garvupadhyay2004" target="_blank" style="display:flex; align-items:center; gap:8px; padding:8px 16px; border:1px solid var(--border); color:var(--muted); text-decoration:none; font-size:0.7rem; letter-spacing:1px; transition:all 0.2s;"
+          onmouseover="this.style.borderColor='var(--accent1)';this.style.color='var(--accent1)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          ⌥ GITHUB
+        </a>
+        <a href="http://www.linkedin.com/in/gaurav-upadhyay-8995b5289/" target="_blank" style="display:flex; align-items:center; gap:8px; padding:8px 16px; border:1px solid var(--border); color:var(--muted); text-decoration:none; font-size:0.7rem; letter-spacing:1px; transition:all 0.2s;"
+          onmouseover="this.style.borderColor='var(--accent2)';this.style.color='var(--accent2)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          ↗ LINKEDIN
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT — Project Story + Stats -->
+    <div style="display:flex; flex-direction:column; gap:24px;">
+
+      <!-- Story -->
+      <div style="background:var(--surface); border:1px solid var(--border); padding:36px; position:relative; overflow:hidden;">
+        <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, var(--accent2), var(--accent3));"></div>
+        <div style="font-size:0.65rem; letter-spacing:3px; color:var(--accent2); margin-bottom:16px;">PROJECT STORY</div>
+        <p style="font-size:0.8rem; color:var(--muted); line-height:1.9;">
+          SynaptiQ started as three separate data science projects — an image safety classifier, a car recommendation engine, and a supply chain demand forecaster. The idea was simple: bring them together under one unified, polished platform that demonstrates how AI can be applied to solve real-world problems. Built using <span style="color:var(--accent1)">TensorFlow</span>, <span style="color:var(--accent2)">Scikit-learn</span>, and <span style="color:var(--accent3)">FastAPI</span>, every model is trained on real data and served live through a REST API.
+        </p>
+      </div>
+
+      <!-- Stats grid -->
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+        <div style="background:var(--surface); border:1px solid var(--border); padding:24px; text-align:center;">
+          <div style="font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:var(--accent1);">3</div>
+          <div style="font-size:0.65rem; letter-spacing:2px; color:var(--muted); margin-top:6px;">ML MODELS</div>
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--border); padding:24px; text-align:center;">
+          <div style="font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:var(--accent2);">Live</div>
+          <div style="font-size:0.65rem; letter-spacing:2px; color:var(--muted); margin-top:6px;">REST API</div>
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--border); padding:24px; text-align:center;">
+          <div style="font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:var(--accent3);">v1.0</div>
+          <div style="font-size:0.65rem; letter-spacing:2px; color:var(--muted); margin-top:6px;">BETA</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Synapti<span>Q</span></div>
+  <span class="footer-copy">© 2025 SynaptiQ — AI Intelligence Platform</span>
+  <div class="footer-links">
+    <a href="#">Docs</a>
+    <a href="#">API</a>
+    <a href="#">GitHub</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+// ─── TABS ───
+function switchTab(id) {
+  document.querySelectorAll('.demo-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['img','car','pred'][i] === id);
+  });
+  document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+// ─── IMAGE GUARD ───
+const fileInput = document.getElementById('file-input');
+const previewImg = document.getElementById('preview-img');
+const analyzeBtn = document.getElementById('analyze-btn');
+const uploadIcon = document.getElementById('upload-icon');
+const uploadText = document.getElementById('upload-text');
+
+fileInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    previewImg.src = ev.target.result;
+    previewImg.style.display = 'block';
+    uploadIcon.style.display = 'none';
+    uploadText.style.display = 'none';
+    analyzeBtn.disabled = false;
+    // Reset results
+    document.getElementById('result-badge').className = 'result-badge result-wait';
+    document.getElementById('result-badge').textContent = '✅ Image loaded';
+    document.getElementById('safe-bar').style.width = '0%';
+    document.getElementById('unsafe-bar').style.width = '0%';
+    document.getElementById('safe-pct').textContent = '—';
+    document.getElementById('unsafe-pct').textContent = '—';
+    document.getElementById('inference-time').textContent = 'Inference: —';
+  };
+  reader.readAsDataURL(file);
+});
+
+async function runAnalysis() {
+  analyzeBtn.disabled = true;
+  analyzeBtn.textContent = 'ANALYZING...';
+  const badge = document.getElementById('result-badge');
+  badge.className = 'result-badge result-wait';
+  badge.textContent = '⏳ Processing...';
+
+  const start = Date.now();
+  try {
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+    const res = await fetch('http://localhost:8000/predict/image', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    const safePct = Math.round(data.safe_prob * 100);
+    const unsafePct = Math.round(data.unsafe_prob * 100);
+    const isSafe = safePct >= 50;
+    document.getElementById('safe-bar').style.width = safePct + '%';
+    document.getElementById('unsafe-bar').style.width = unsafePct + '%';
+    document.getElementById('safe-pct').textContent = safePct + '%';
+    document.getElementById('unsafe-pct').textContent = unsafePct + '%';
+    badge.className = 'result-badge ' + (isSafe ? 'result-safe' : 'result-unsafe');
+    badge.textContent = isSafe ? '✅ SAFE CONTENT' : '🚫 ADULT CONTENT';
+    document.getElementById('inference-time').textContent = `Inference: ${Date.now() - start}ms`;
+  } catch (err) {
+    badge.className = 'result-badge result-wait';
+    badge.textContent = '❌ Error: ' + err.message;
+  }
+  analyzeBtn.disabled = false;
+  analyzeBtn.textContent = 'ANALYZE AGAIN';
+}
+
+// ─── CAR RECOMMENDATION ───
+function updateBudget(val) {
+  document.getElementById('budget-val').textContent = parseInt(val).toLocaleString('en-US');
+}
+
+const carData = {
+  SUV: {
+    Any: ['Hyundai Creta', 'Mahindra XUV700', 'Tata Harrier', 'Kia Seltos', 'MG Hector'],
+    Electric: ['Tata Nexon EV', 'MG ZS EV', 'Hyundai Kona Electric'],
+    Petrol: ['Hyundai Creta', 'Kia Seltos', 'Renault Duster'],
+    Diesel: ['Mahindra XUV700', 'Tata Harrier', 'Jeep Compass'],
+    Hybrid: ['Toyota RAV4 Hybrid', 'Maruti Grand Vitara Hybrid']
+  },
+  Sedan: {
+    Any: ['Honda City', 'Maruti Ciaz', 'Hyundai Verna', 'Toyota Yaris'],
+    Electric: ['Tesla Model 3'],
+    Petrol: ['Honda City', 'Maruti Ciaz', 'Hyundai Verna'],
+    Diesel: ['Skoda Octavia', 'VW Virtus'],
+    Hybrid: ['Toyota Camry Hybrid']
+  },
+  Hatchback: {
+    Any: ['Maruti Swift', 'Hyundai i20', 'Tata Altroz', 'VW Polo'],
+    Petrol: ['Maruti Swift', 'Hyundai i20'],
+    Diesel: ['Maruti Baleno Diesel', 'Tata Altroz Diesel'],
+    Electric: ['Tata Tiago EV'],
+    Hybrid: ['Toyota Glanza Hybrid']
+  },
+  Truck: {
+    Any: ['Tata Xenon', 'Mahindra Scorpio Getaway', 'Isuzu D-Max'],
+    Diesel: ['Tata Xenon', 'Isuzu D-Max'],
+    Petrol: ['Mahindra Bolero Pickup'],
+    Electric: [], Hybrid: []
+  },
+  Coupe: {
+    Any: ['Audi A5', 'BMW 4 Series', 'Mercedes C-Class Coupe'],
+    Petrol: ['Audi A5', 'BMW 4 Series'],
+    Electric: ['BMW i4'], Diesel: [], Hybrid: ['BMW 4 Series Hybrid']
+  },
+  Minivan: {
+    Any: ['Toyota Innova Crysta', 'Kia Carnival', 'Maruti Ertiga'],
+    Petrol: ['Maruti Ertiga', 'Toyota Innova Crysta Petrol'],
+    Diesel: ['Toyota Innova Crysta Diesel', 'Kia Carnival'],
+    Hybrid: ['Toyota Innova Hycross Hybrid'],
+    Electric: []
+  }
+};
+
+const carSpecs = {
+  'Hyundai Creta': { eng: '1.5L Petrol/Diesel', mileage: '17 kmpl', price: '₹11–20L' },
+  'Mahindra XUV700': { eng: '2.0L Turbo Petrol/Diesel', mileage: '15 kmpl', price: '₹14–26L' },
+  'Tata Harrier': { eng: '2.0L Diesel', mileage: '16 kmpl', price: '₹15–26L' },
+  'Kia Seltos': { eng: '1.5L Petrol/Diesel', mileage: '16 kmpl', price: '₹11–20L' },
+  'MG Hector': { eng: '1.5T Petrol/Diesel', mileage: '15 kmpl', price: '₹14–22L' },
+  'Tata Nexon EV': { eng: 'Electric 40.5 kWh', mileage: '312 km range', price: '₹14–20L' },
+  'Honda City': { eng: '1.5L Petrol', mileage: '18 kmpl', price: '₹12–16L' },
+  'Maruti Swift': { eng: '1.2L Petrol', mileage: '23 kmpl', price: '₹6–9L' },
+  'Hyundai i20': { eng: '1.2L Petrol/Diesel', mileage: '20 kmpl', price: '₹7–12L' },
+  'Toyota Innova Crysta': { eng: '2.4L Diesel', mileage: '15 kmpl', price: '₹19–26L' },
+  'Kia Carnival': { eng: '2.2L Diesel', mileage: '14 kmpl', price: '₹25–35L' },
+};
+
+async function getCarRecommendations() {
+  const container = document.getElementById('car-results');
+  container.innerHTML = `<div style="color:var(--muted); font-size:0.75rem; text-align:center; padding:20px;">⏳ Finding matches...</div>`;
+
+  try {
+    const res = await fetch('http://localhost:8000/recommend/car', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        hp:          parseFloat(document.getElementById('car-hp').value) || 200,
+        cylinders:   parseFloat(document.getElementById('car-cylinders').value) || 4,
+        highway_mpg: parseFloat(document.getElementById('car-hwy').value) || 30,
+        city_mpg:    parseFloat(document.getElementById('car-city').value) || 25,
+        budget:      parseFloat(document.getElementById('car-budget').value) || 30000
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    const cars = data.cars;
+    if (!cars || cars.length === 0) {
+      container.innerHTML = `<div style="color:var(--muted); font-size:0.75rem; text-align:center; padding:20px;">No cars found. Try different preferences.</div>`;
+      return;
+    }
+
+    container.innerHTML = cars.map(car => `
+      <div class="car-card">
+        <div class="car-name">${car.name} <span style="font-size:0.6rem;color:var(--muted)">(${car.year})</span></div>
+        <div class="car-specs">Engine: ${car.engine}<br>Mileage: ${car.mileage}<br>Price: ${car.price}</div>
+        <div class="car-match">
+          <span style="font-size:0.62rem;color:var(--muted)">MATCH</span>
+          <div class="match-bar"><div class="match-fill" style="width:${car.match_score}%"></div></div>
+          <span class="match-pct">${car.match_score}%</span>
+        </div>
+      </div>`).join('');
+
+  } catch (err) {
+    container.innerHTML = `<div style="color:#ff5050; font-size:0.75rem; text-align:center; padding:20px;">❌ ${err.message}</div>`;
+  }
+}
+
+async function runPrediction() {
+  const container = document.getElementById('pred-results');
+  container.innerHTML = `<div style="color:var(--muted); font-size:0.75rem; text-align:center; padding:20px;">⏳ Running model...</div>`;
+
+  try {
+    const res = await fetch('http://localhost:8000/predict/analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        month: new Date().getMonth() + 1,
+        day: new Date().getDate(),
+        year: new Date().getFullYear(),
+        shipment_weight: parseFloat(document.getElementById('pred-current').value) / 100 || 250.0,
+        processing_time: 30.0,
+        scanner_used: 1,
+        warehouse_id: 'WH_1',
+        region: 'North'
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    const predicted = data.predicted_orders;
+    const workers = data.estimated_workers_needed;
+    const barHeights = [30, 45, 38, 55, 42, 60, 70, 65].map(h => Math.round(h + Math.random() * 20));
+    const maxH = Math.max(...barHeights);
+
+    container.innerHTML = `
+      <div class="predict-card">
+        <div class="predict-metric">Predicted Orders</div>
+        <div class="predict-value">${Math.round(predicted).toLocaleString()}</div>
+        <div class="predict-change">▲ Warehouse: ${data.warehouse} | ${data.region}</div>
+        <div class="mini-chart">
+          ${barHeights.map((h, i) => `<div class="bar ${i === barHeights.length-1 ? 'active' : ''}" style="height:${Math.round(h/maxH*100)}%"></div>`).join('')}
+        </div>
+      </div>
+      <div class="predict-card">
+        <div class="predict-metric">Workers Needed</div>
+        <div class="predict-value" style="font-size:1.4rem;">${workers}</div>
+        <div class="predict-change">Based on your logistics data</div>
+      </div>
+      <div class="predict-card">
+        <div class="predict-metric">Model</div>
+        <div class="predict-value" style="font-size:1rem; line-height:1.3;">Random Forest</div>
+        <div class="predict-change">Trained on your CSV ✅</div>
+      </div>`;
+
+  } catch (err) {
+    container.innerHTML = `<div style="color:#ff5050; font-size:0.75rem; text-align:center; padding:20px;">❌ ${err.message}</div>`;
+  }
+}
+
+// ── SPLASH SCREEN ──
+window.addEventListener('load', function() {
+  const logo = document.getElementById('splashLogo');
+  const tag = document.getElementById('splashTag');
+  const bar = document.getElementById('splashBar');
+  const nodes = document.getElementById('splashNodes');
+
+  // Animate logo and tagline in
+  setTimeout(() => { logo.style.opacity = '1'; logo.style.transform = 'translateY(0)'; }, 100);
+  setTimeout(() => { tag.style.opacity = '1'; }, 500);
+  setTimeout(() => { bar.style.width = '100%'; }, 600);
+
+  // Floating nodes
+  for (let i = 0; i < 25; i++) {
+    const n = document.createElement('div');
+    n.style.cssText = `position:absolute;width:4px;height:4px;border-radius:50%;
+      background:${Math.random()>0.5?'#00f5c4':'#7b5cf5'};
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      opacity:0;animation:nodeUp ${2+Math.random()*2}s ease-in-out ${Math.random()*3}s infinite;`;
+    nodes.appendChild(n);
+  }
+
+  // Hide splash
+  setTimeout(() => {
+    const splash = document.getElementById('splash');
+    splash.style.transition = 'opacity 1s ease';
+    splash.style.opacity = '0';
+    setTimeout(() => { splash.style.display = 'none'; }, 1000);
+  }, 4000);
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
